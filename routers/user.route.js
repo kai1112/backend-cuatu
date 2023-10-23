@@ -6,9 +6,10 @@ const {
   update,
   remove,
 } = require("../controllers/user.controller");
+const { checkRoleAdmin } = require("../middleware/auth");
 
 router.get("/", view);
-router.post("/", create);
+router.post("/",checkRoleAdmin, create);
 router.put("/update/:id", update);
 router.delete("/remove/:id", remove);
 

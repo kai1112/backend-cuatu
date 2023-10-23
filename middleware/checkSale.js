@@ -1,13 +1,16 @@
-import ProductModel from "../models/product.model";
-import SaleModel from "../models/sale.model";
+const Product = require("../models/product.model");
+const SaleModel = require("../models/sale.model");
 
-export async function checkSale() {
+async function checkSale() {
   let Sale = await SaleModel.find({ status: 1 });
+  if (!Sale || Sale.length === 0) return;
   for (let i = 0; i < Sale.length; i++) {
     let time = new Date().getTime();
     if (Sale[i].endDate < time) {
       await SaleModel.findOneAndUpdate(Sale[i].id, { status: 2 });
-      await ProductModel.updateMany({ saleID: Sale[i].id }, { saleID: null });
+      await Product.updateMany({ saleID: Sale[i].id }, { saleID: null });
     }
   }
 }
+
+module.exports = { checkSale };

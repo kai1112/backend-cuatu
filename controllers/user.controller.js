@@ -1,8 +1,7 @@
-const User = require("../models/user.model");
+const User = require("../models/user.mode");
 const Role = require("../models/role.model");
 const createLogger = require("../middleware/logger");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 
 const create = async (req, res) => {
   try {
@@ -11,10 +10,8 @@ const create = async (req, res) => {
       return res.json({ status: 404, message: "Email user is already!!!" });
     if (user && user.phone === req.body.phone)
       return res.json({ status: 404, message: "Phone user is already!!!" });
-    let role = await Role.findOne({ name: "user" });
+    let role = await Role.findOne({ _id: req.body.role });
     const password = await bcrypt.hash(req.body.password, 10);
-
-    console.log(req.body.dateOfBirth);
 
     let newUser = await User.create({
       username: req.body.username,
@@ -26,9 +23,11 @@ const create = async (req, res) => {
     });
     if (!newUser)
       return res.json({ status: 404, message: "Create new User failed!!!" });
+    delete newUser.password;
     res.json({
       status: 200,
       message: "Register success!!!",
+      data: newUser,
     });
   } catch (err) {
     createLogger.error(err);
@@ -76,7 +75,11 @@ const update = async (req, res) => {
     let updateUser = await User.findOneAndUpdate(user);
     if (!updateUser)
       return res.json({ status: 404, message: "Update failed!" });
-    return res.json({ status: 200, message: "Update successful!" });
+    return res.json({
+      status: 200,
+      message: "Update successful!",
+      data: updateUser,
+    });
   } catch (err) {
     createLogger.error(err);
   }
@@ -90,7 +93,11 @@ const remove = async (req, res) => {
     let updateUser = await User.findOneAndUpdate(user);
     if (!updateUser)
       return res.json({ status: 404, message: "Remove user failed!" });
-    return res.json({ status: 404, message: "Remove user successfully!!!" });
+    return res.json({
+      status: 404,
+      message: "Remove user successfully!!!",
+      data: updateUser,
+    });
   } catch (err) {
     createLogger.error(err);
   }

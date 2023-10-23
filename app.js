@@ -6,7 +6,17 @@ const app = express();
 const session = require("express-session");
 const router = require("./routers/index");
 const { checkSale } = require("./middleware/checkSale");
-
+const cron = require("node-cron");
+cron.schedule(
+  "* * * 1 * *",
+  async () => {
+    await checkSale();
+  },
+  {
+    scheduled: true,
+    timezone: "Asia/Ho_Chi_Minh",
+  }
+);
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cookieParser());
@@ -22,10 +32,10 @@ app.use(
     saveUninitialized: false,
   })
 );
+
 // điều hướng router
 app.use("/", router);
 
-new CronJob("* * * 1 * *", checkSale(), null, true, "Asia/Ho_Chi_Minh");
 app.listen(process.env.PORT || "4000", () => {
   console.log("Server is running: http://localhost:4000");
 });

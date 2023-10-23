@@ -10,7 +10,7 @@ const ProductSchema = mongoose.Schema(
     backgroud_avatar: String,
     price: Number,
     amount: Number,
-    saleID: { type: String, default: null },
+    saleID: { type: String, ref: "Sale", default: null },
   },
   { collection: "Product", timestamps: true }
 );

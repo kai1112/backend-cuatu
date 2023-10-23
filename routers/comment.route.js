@@ -1,9 +1,10 @@
-const router = require("express").Router()
-const {create,view, update, remove} = require("../controllers/comment.controller")
+const router = require("express").Router();
+const { create, update, remove } = require("../controllers/comment.controller");
+const { checkToken } = require("../middleware/auth");
 
 // router.get("/", view)
-router.post("/", create)
-router.put("/update/:id", update)
-router.delete("/remove/:id", remove)
+router.post("/", checkToken, create);
+router.put("/update/:id", checkToken, update);
+router.delete("/remove/:id", checkToken, remove);
 
 module.exports = router;

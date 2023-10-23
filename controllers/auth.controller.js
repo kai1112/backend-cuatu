@@ -1,7 +1,6 @@
-const UserModel = require("../models/user.model");
+const UserModel = require("../models/user.mode");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-
 
 // login
 module.exports.login = async (req, res) => {
@@ -17,12 +16,15 @@ module.exports.login = async (req, res) => {
       if (checkPassword) {
         const UserID = data._id;
         const token = jwt.sign(`${UserID}`, "kai");
-        await UserModel.updateOne({ _id: data._id }, { token: token });
+        await UserModel.updateOne({ _id: data._id }, { tokken: token });
         res.cookie("user", token, {
           expires: new Date(Date.now() + 60 * 60 * 24 * 60),
         });
-        let user = await UserModel.findOne({ email: req.body.email });
-        res.json({ role: user.role });
+        let user = await UserModel.findOne({ email: req.body.email }).populate(
+          "roleID"
+        );
+        delete user.password;
+        res.json({ data: user });
       } else {
         res.json({ message: " incorrect password" });
       }
@@ -47,19 +49,18 @@ module.exports.register = async (req, res) => {
       // mã hoá password
       const password = await bcrypt.hash(req.body.password, 10);
       // create user
-      await UserModel.create({
+      let newUser = await UserModel.create({
         username: req.body.username,
         password: password,
         name: req.body.name,
         dateOfBirth: req.body.dateOfBirth,
-        monney: 0,
         email: req.body.email,
-        buyed: [],
-        role: "user",
+        roleID: req.body.roleID,
       });
       res.json({
-        message: "login success",
+        message: "register success",
         status: 200,
+        data: newUser,
       });
     }
   } catch (err) {

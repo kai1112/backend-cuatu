@@ -5,7 +5,11 @@ const UserSchema = mongoose.Schema(
     name: String,
     email: String,
     password: String,
-    roleID: String,
+    roleID: {
+      type: String,
+      ref: "Role",
+      required: true,
+    },
     phone: Number,
     dateOfBirth: Date,
     status: { type: Number, enum: [1, 2], default: 1 }, // 1 là hoạt động, 2 là ban

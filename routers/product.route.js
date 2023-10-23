@@ -5,8 +5,10 @@ const {
   update,
   remove,
   findProduct,
+  viewDetailsProduct,
 } = require("../controllers/product.controller");
 const multer = require("multer");
+const { checkRoleAdmin } = require("../middleware/auth");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -22,14 +24,15 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 var cpUpload = upload.fields([
-  { name: 'avatar', maxCount: 1 },
-  { name: 'backgroud_avatar', maxCount: 5 },
+  { name: "avatar", maxCount: 1 },
+  { name: "backgroud_avatar", maxCount: 5 },
 ]);
 
 router.get("/", view);
 router.get("/find", findProduct);
-router.post("/", cpUpload, create);
-router.put("/update/:id", update);
-router.delete("/remove/:id", remove);
+router.get("/:id", viewDetailsProduct);
+router.post("/", checkRoleAdmin, cpUpload, create);
+router.put("/update/:id", checkRoleAdmin, update);
+router.delete("/remove/:id", checkRoleAdmin, remove);
 
 module.exports = router;

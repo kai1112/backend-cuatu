@@ -115,6 +115,20 @@ const update = async (req, res) => {
   }
 };
 
+const findProduct = async (req, res) => {
+  try {
+    let product = Product.find({
+      name: { $regex: req.query.name, $options: "i" },
+    }).populate("brand");
+    if (!product) {
+      return res.json({ status: 404, message: "Product not found" });
+    }
+    return res.json({ status: 200, data: product });
+  } catch (err) {
+    createLogger.error(err);
+  }
+};
+
 const remove = async (req, res) => {
   try {
     let Product = await Product.findOne({ id: req.body._id });
@@ -134,4 +148,11 @@ const remove = async (req, res) => {
   }
 };
 
-module.exports = { create, update, remove, view };
+module.exports = {
+  create,
+  update,
+  remove,
+  view,
+  viewDetailsProduct,
+  findProduct,
+};
